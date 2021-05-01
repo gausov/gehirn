@@ -1,0 +1,33 @@
+from bs4 import BeautifulSoup
+import telebot
+import requests
+from requests import get
+import csv
+import datetime
+import time
+
+
+
+temp = get('http://192.168.0.148').text
+
+
+soup = BeautifulSoup(temp, 'lxml')
+print(soup.find_all('p')[0].text)
+print(soup.find_all('p')[1].text)
+
+message1 = soup.find_all('p')[0].text
+message2 = soup.find_all('p')[1].text
+
+with open('weather.csv', mode='w') as weathercsv:
+    csv_writer = csv.DictWriter(weathercsv, fieldnames=['time', 'temperature', 'humidity'])
+    csv_writer.writeheader()
+    while True:
+        time_now = datetime.datetime.now().strftime("%H:%M:%S")
+        temperature = message1
+        humidity = message2
+        csv_writer.writerow({
+            'time': time_now,
+            'temperature': temperature,
+            'humidity': humidity
+            })
+        time.sleep(1800)
